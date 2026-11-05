@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Таймер для учёбы</title>
+  <style>
+    body {
+      background: #b91c1c;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding-top: 70px;
+    }
+    #mode { font-size: 26px; }
+    #timer {
+      font-size: 100px;
+      font-family: monospace;
+      margin: 20px;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px 25px;
+      margin: 5px;
+      background: white;
+      color: #b91c1c;
+      border: none;
+      border-radius: 8px;
+    }
+    #count { margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h1>Таймер для учёбы (Помодоро)</h1>
+  <div id="mode">Время учиться</div>
+  <div id="timer">25:00</div>
+
+  <button onclick="start()">Старт</button>
+  <button onclick="pause()">Пауза</button>
+  <button onclick="reset()">Сброс</button>
+
+  <p id="count">Завершено циклов: 0</p>
+
+  <script>
+    let seconds = 25 * 60;  // оставшееся время в секундах
+    let isWork = true;      // сейчас учёба или перерыв
+    let timer = null;       // ссылка на работающий таймер
+    let cycles = 0;         // сколько циклов учёбы завершено
+
+    // Показать время на экране в формате мм:сс
+    function show() {
+      let m = Math.floor(seconds / 60);
+      let s = seconds % 60;
+      if (m < 10) m = "0" + m;
+      if (s < 10) s = "0" + s;
+      document.getElementById("timer").innerHTML = m + ":" + s;
+    }
+
+    // Один шаг таймера (каждую секунду)
+    function tick() {
+      seconds = seconds - 1;
+      show();
+
+      // Время вышло — переключаем режим
+      if (seconds == 0) {
+        pause();
+        if (isWork) {
+          cycles = cycles + 1;
+          document.getElementById("count").innerHTML = "Завершено циклов: " + cycles;
+          alert("Отличная работа! Пора отдохнуть 5 минут.");
+          isWork = false;
+          seconds = 5 * 60;
+          document.getElementById("mode").innerHTML = "Перерыв";
+          document.body.style.background = "#15803d";
+        } else {
+          alert("Перерыв окончен. Время учиться!");
+          isWork = true;
+          seconds = 25 * 60;
+          document.getElementById("mode").innerHTML = "Время учиться";
+          document.body.style.background = "#b91c1c";
+        }
+        show();
+      }
+    }
+
+    // Запустить таймер
+    function start() {
+      if (timer == null) {
+        timer = setInterval(tick, 1000);
+      }
+    }
+
+    // Поставить на паузу
+    function pause() {
+      clearInterval(timer);
+      timer = null;
+    }
+
+    // Сбросить таймер
+    function reset() {
+      pause();
+      isWork = true;
+      seconds = 25 * 60;
+      document.getElementById("mode").innerHTML = "Время учиться";
+      document.body.style.background = "#b91c1c";
+      show();
+    }
+  </script>
+
+</body>
+</html>
